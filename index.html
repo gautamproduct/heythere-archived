@@ -233,7 +233,7 @@
   <div class="fade-in">
     <p class="script">Yayyy! 🎉</p>
     <p class="subtitle" style="font-size: clamp(1.1rem, 3.5vw, 1.3rem); color: var(--text); max-width: 480px;">
-      Okay we will decide the place and date together.<br>Can't wait, Sankita.
+      We will decide the place and date together.<br>Can't wait, Sankita.
     </p>
     <p class="subtitle" style="font-size: clamp(1rem, 3.2vw, 1.15rem); color: var(--text); max-width: 480px; margin-top: -20px;">
       And listen, aaj raat ko baat karenge — free rehna, koi disturb na kare 😌
@@ -305,7 +305,17 @@
     document.getElementById(id).classList.add('active');
     logEvent('scene_view', { scene: id });
   }
-  logEvent('scene_view', { scene: 'landing' });
+
+  // Once she's answered, never let this reload back to the start.
+  const COMPLETE_KEY = 'heythere_completed_v1';
+  let alreadyCompleted = false;
+  try { alreadyCompleted = localStorage.getItem(COMPLETE_KEY) === 'true'; } catch (e) {}
+  if (alreadyCompleted) {
+    goTo('finalScene');
+    logEvent('revisit_after_complete');
+  } else {
+    logEvent('scene_view', { scene: 'landing' });
+  }
 
   // Reasons carousel
   const reasons = [
@@ -390,6 +400,7 @@
 
   // Yes -> confetti hearts + final scene
   function sayYes() {
+    try { localStorage.setItem(COMPLETE_KEY, 'true'); } catch (e) {}
     goTo('finalScene');
     const layer = document.getElementById('heartsLayer');
     const emojis = ['❤️','💕','✨','💫','🎉'];
